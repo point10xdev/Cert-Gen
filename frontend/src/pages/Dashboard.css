@@ -10,7 +10,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
 
 .dashboard-header h1 {
   margin: 0;

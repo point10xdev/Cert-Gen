@@ -55,7 +55,7 @@
   cursor: pointer;
 }
 
-.btn-primary {
+.generate-form .btn-primary {
   width: 100%;
   padding: 0.75rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

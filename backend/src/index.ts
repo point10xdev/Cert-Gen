@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { pool, initDatabase } from './config/database';
+import statsRoutes from './routes/stats';
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use('/api/generate', generateRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/verify', verifyRoutes);
 app.use('/api/allowed-recipients', recipientRoutes);
+app.use('/api/stats', statsRoutes);
 
 // --- Health Check ---
 app.get('/health', (_req, res) => {

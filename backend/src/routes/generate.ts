@@ -43,19 +43,6 @@ router.post('/', async (req, res) => {
     const template = templateResult.rows[0];
     let svgContent = template.svg_content;
 
-    // Replace placeholders
-    const replacements: { [key: string]: string } = { NAME: name };
-    if (event) replacements.EVENT = event;
-    if (metadata) {
-      Object.entries(metadata).forEach(([key, value]) => {
-        replacements[key.toUpperCase()] = String(value);
-      });
-    }
-
-    Object.entries(replacements).forEach(([key, value]) => {
-      svgContent = svgContent.replace(new RegExp(`{{${key}}}`, 'g'), value);
-    });
-
     // Generate verification code
     const verificationCode = QRService.generateVerificationCode();
 
@@ -63,8 +50,42 @@ router.post('/', async (req, res) => {
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify/${verificationCode}`;
     const qrDataURL = await QRService.generateQRCode(verificationUrl);
 
-    // Embed QR code in SVG
-    const qrEmbeddedSVG = embedQRCodeInSVG(svgContent, qrDataURL);
+    // Replace placeholders
+    const replacements: { [key: string]: string } = { 
+      NAME: name,
+      name: name,
+      EVENT: event || '',
+      event: event || '',
+      ID: verificationCode,
+      id: verificationCode,
+      EMAIL: email,
+      email: email
+    };
+    
+    if (metadata) {
+      Object.entries(metadata).forEach(([key, value]) => {
+        replacements[key.toUpperCase()] = String(value);
+        replacements[key] = String(value);
+      });
+    }
+
+    // Replace all placeholders (case-insensitive matching)
+    Object.entries(replacements).forEach(([key, value]) => {
+      // Match both {{KEY}} and {{key}}
+      svgContent = svgContent.replace(new RegExp(`{{${key}}}`, 'gi'), value);
+    });
+    
+    // Handle QR code placeholder - replace with image tag
+    const hasQRPlaceholder = /\{\{QR\}\}/gi.test(svgContent);
+    if (hasQRPlaceholder) {
+      // Replace {{QR}} or {{qr}} with proper SVG image tag
+      svgContent = svgContent.replace(/\{\{QR\}\}/gi, `<image x="850" y="600" width="200" height="200" href="${qrDataURL}" />`);
+    } else {
+      // No QR placeholder found, embed QR at default position
+      svgContent = embedQRCodeInSVG(svgContent, qrDataURL);
+    }
+    
+    const qrEmbeddedSVG = svgContent;
 
     // --- NEW LOCAL STORAGE LOGIC ---
 

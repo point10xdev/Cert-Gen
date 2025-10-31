@@ -81,7 +81,7 @@ Create `backend/.env`:
 
 ```env
 # Server
-PORT=5001
+PORT=5000
 
 # Database
 DB_HOST=localhost
@@ -118,7 +118,7 @@ VERIFICATION_SECRET=your-verification-secret-change-this
 Create `frontend/.env`:
 
 ```env
-VITE_API_URL=http://localhost:5001
+VITE_API_URL=http://localhost:5000
 ```
 
 #### Step 4: Create Admin User
@@ -133,7 +133,7 @@ npm run dev
 In another terminal:
 
 ```bash
-curl -X POST http://localhost:5001/api/auth/register \
+curl -X POST http://localhost:5000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
@@ -144,7 +144,7 @@ curl -X POST http://localhost:5001/api/auth/register \
 
 Or use Postman:
 - Method: POST
-- URL: http://localhost:5001/api/auth/register
+- URL: http://localhost:5000/api/auth/register
 - Body (JSON):
 ```json
 {
@@ -168,7 +168,7 @@ You should see:
 ```
 Database connected successfully
 Database initialized
-Server running on port 5001
+Server running on port 5000
 ```
 
 **Terminal 2 - Frontend:**
@@ -279,20 +279,20 @@ AWS_S3_BUCKET=your-bucket-name
 
 ### Port Already in Use
 
-**Problem:** "Port 5001 already in use"
+**Problem:** "Port 5000 already in use"
 
 **Solutions:**
 1. Change port in `backend/.env`:
    ```env
-   PORT=5001
+   PORT=5000
    ```
 
 2. Update `frontend/.env`:
    ```env
-   VITE_API_URL=http://localhost:5001
+   VITE_API_URL=http://localhost:5000
    ```
 
-3. Or kill the process using port 5001
+3. Or kill the process using port 5000
 
 ### PDF Generation Fails
 

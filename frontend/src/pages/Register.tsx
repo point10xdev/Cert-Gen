@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // <-- Import Link
+import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { login } from '../services/authService';
-import './Login.css';
+import { register } from '../services/authService';
+import './Login.css'; 
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -15,13 +16,11 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const data = await login({ username, password });
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      toast.success('Login successful!');
-      navigate('/dashboard');
+      await register({ username, email, password });
+      toast.success('Registration successful! Please log in.');
+      navigate('/login');
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Login failed');
+      toast.error(error.response?.data?.error || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -30,8 +29,8 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>Certificate Generator</h1>
-        <h2>Admin Login</h2>
+        <h1>Create Account</h1>
+        <h2>Admin Registration</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username</label>
@@ -40,6 +39,16 @@ const LoginPage = () => {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -54,13 +63,12 @@ const LoginPage = () => {
             />
           </div>
           <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
-        {/* \/ Add this link \/ */}
         <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-          <Link to="/register" className="back-link">
-            Don't have an account? Register
+          <Link to="/login" className="back-link">
+            Already have an account? Login
           </Link>
         </div>
       </div>
@@ -68,4 +76,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

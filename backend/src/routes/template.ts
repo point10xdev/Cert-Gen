@@ -57,6 +57,69 @@ router.get('/:id', verifyAdminRole, async (req, res) => {
   }
 });
 
+// --- NEW ---
+// Edit a template's name
+router.put('/:id', verifyAdminRole, async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    if (!name) {
+      res.status(400).json({ error: 'Name is required' });
+      return;
+    }
+
+    const result = await pool.query(
+      'UPDATE templates SET name = $1 WHERE id = $2 RETURNING *',
+      [name, id]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Template not found' });
+      return;
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating template:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete a template
+router.delete('/:id', verifyAdminRole, async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+
+    // Optional: Check if template is in use by any certificates
+    const inUseCheck = await pool.query(
+      'SELECT id FROM certificates WHERE template_id = $1 LIMIT 1',
+      [id]
+    );
+
+    if (inUseCheck.rows.length > 0) {
+      res.status(400).json({ error: 'Template is in use and cannot be deleted' });
+      return;
+    }
+
+    const result = await pool.query(
+      'DELETE FROM templates WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Template not found' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Template deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting template:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+// --- END NEW ---
+
 function extractPlaceholders(svgContent: string): string[] {
   const regex = /\{\{([^}]+)\}\}/g;
   const matches = svgContent.match(regex);
@@ -64,4 +127,3 @@ function extractPlaceholders(svgContent: string): string[] {
 }
 
 export default router;
-

@@ -23,3 +23,12 @@ export const uploadTemplate = async (file: File, name: string): Promise<Template
   return response.data;
 };
 
+export const updateTemplate = async (id: number, name: string): Promise<Template> => {
+  const response = await api.put(`/template/${id}`, { name });
+  return response.data;
+};
+
+export const deleteTemplate = async (id: number): Promise<any> => {
+  const response = await api.delete(`/template/${id}`);
+  return response.data;
+};

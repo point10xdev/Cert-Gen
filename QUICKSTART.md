@@ -69,7 +69,7 @@ You should see:
 ```
 Database connected successfully
 Database initialized
-Server running on port 5000
+Server running on port 5001
 ```
 
 **Terminal 2 - Frontend:**
@@ -85,7 +85,7 @@ Open: http://localhost:3000
 Open a new terminal and run:
 
 ```bash
-curl -X POST http://localhost:5000/api/auth/register \
+curl -X POST http://localhost:5001/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","email":"admin@example.com","password":"admin123"}'
 ```

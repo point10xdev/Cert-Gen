@@ -82,7 +82,7 @@ router.post('/', async (req, res) => {
     await PDFService.generateFromSVG(qrEmbeddedSVG, certificatePath);
 
     // 4. Create the public URL for the file
-    const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/certificates/${uniqueFilename}`;
+    const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5001'}/certificates/${uniqueFilename}`;
     
     // --- END NEW LOGIC ---
 

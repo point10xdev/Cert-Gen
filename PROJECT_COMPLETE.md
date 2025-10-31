@@ -143,7 +143,7 @@ cd frontend && npm run dev
 
 ### 5. Create Admin User
 ```bash
-curl -X POST http://localhost:5000/api/auth/register \
+curl -X POST http://localhost:5001/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","email":"admin@example.com","password":"admin123"}'
 ```
@@ -181,7 +181,7 @@ AWS_S3_BUCKET=your-bucket
 
 ### 3. Add Recipient
 ```bash
-curl -X POST http://localhost:5000/api/allowed-recipients \
+curl -X POST http://localhost:5001/api/allowed-recipients \
   -H "Content-Type: application/json" \
   -d '{"name":"John Doe","email":"john@example.com","event":"Test Event"}'
 ```

@@ -11,7 +11,7 @@
          ▼
 ┌─────────────────┐
 │  Express API    │
-│   (Port 5000)   │
+│   (Port 5001)   │
 └────────┬────────┘
          │
     ┌────┴─────┬──────────────┐
@@ -203,8 +203,8 @@ VITE_API_URL
 ### Development
 ```
 npm run dev
-├─> Backend: localhost:5000
-└─> Frontend: localhost:3000 (proxy → 5000)
+├─> Backend: localhost:5001
+└─> Frontend: localhost:3000 (proxy → 5001)
 ```
 
 ### Production

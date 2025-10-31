@@ -43,7 +43,7 @@ echo "Creating environment files..."
 if [ ! -f "backend/.env" ]; then
     cp backend/.env.example backend/.env 2>/dev/null || cat > backend/.env << 'EOF'
 # Server
-PORT=5000
+PORT=5001
 
 # Database
 DB_HOST=localhost
@@ -81,7 +81,7 @@ fi
 
 # Frontend .env
 if [ ! -f "frontend/.env" ]; then
-    echo "VITE_API_URL=http://localhost:5000" > frontend/.env
+    echo "VITE_API_URL=http://localhost:5001" > frontend/.env
     echo "✓ Frontend .env created"
 else
     echo "✓ Frontend .env already exists"

@@ -15,7 +15,7 @@ cd D:\FOSS\Certificate-Generator\backend
 npm run dev
 ```
 
-Wait for: `Server running on port 5000`
+Wait for: `Server running on port 5001`
 
 ### Step 2: Start Frontend Server
 
@@ -39,7 +39,7 @@ Before you can login, create an admin user:
 Open **Terminal 3** (PowerShell):
 
 ```powershell
-Invoke-WebRequest -Uri http://localhost:5000/api/auth/register -Method POST -ContentType "application/json" -Body '{"username":"admin","email":"admin@example.com","password":"admin123"}' -UseBasicParsing
+Invoke-WebRequest -Uri http://localhost:5001/api/auth/register -Method POST -ContentType "application/json" -Body '{"username":"admin","email":"admin@example.com","password":"admin123"}' -UseBasicParsing
 ```
 
 You should see: `{"user":{"id":1,"username":"admin",...}}`
@@ -56,7 +56,7 @@ You should see: `{"user":{"id":1,"username":"admin",...}}`
 
 3. **Add Recipient**
    ```powershell
-   Invoke-WebRequest -Uri http://localhost:5000/api/allowed-recipients -Method POST -ContentType "application/json" -Body '{"name":"John Doe","email":"john@example.com","event":"Test Event"}' -UseBasicParsing
+   Invoke-WebRequest -Uri http://localhost:5001/api/allowed-recipients -Method POST -ContentType "application/json" -Body '{"name":"John Doe","email":"john@example.com","event":"Test Event"}' -UseBasicParsing
    ```
 
 4. **Generate Certificate**
@@ -83,7 +83,7 @@ Certificate-Generator/
 
 ## 🎓 What's Included
 
-✅ **Backend (Port 5000)**
+✅ **Backend (Port 5001)**
 - Express + TypeScript server
 - PostgreSQL database
 - JWT authentication
@@ -114,7 +114,7 @@ Certificate-Generator/
 You can create `backend/.env` with these settings (optional):
 
 ```env
-PORT=5000
+PORT=5001
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=certificate_generator
@@ -134,7 +134,7 @@ Defaults work for local development!
 Create `frontend/.env` if needed:
 
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=http://localhost:5001
 ```
 
 ## 🐛 Troubleshooting
@@ -155,7 +155,7 @@ psql -U postgres -c "CREATE DATABASE certificate_generator;"
 
 Kill the process:
 ```powershell
-netstat -ano | findstr :5000
+netstat -ano | findstr :5001
 taskkill /PID <process_id> /F
 
 netstat -ano | findstr :3000

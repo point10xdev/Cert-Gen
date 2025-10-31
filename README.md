@@ -94,7 +94,7 @@ JWT_SECRET=change-this-to-a-random-string
 
 ```env
 # Server
-PORT=5000
+PORT=5001
 
 # Database
 DB_HOST=localhost
@@ -176,7 +176,7 @@ npm run preview
 First, register an admin user via the backend API:
 
 ```bash
-curl -X POST http://localhost:5000/api/auth/register \
+curl -X POST http://localhost:5001/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","email":"admin@example.com","password":"securepassword"}'
 ```
@@ -208,7 +208,7 @@ Example SVG:
 Before generating certificates, add recipients to the allowed list:
 
 ```bash
-curl -X POST http://localhost:5000/api/allowed-recipients \
+curl -X POST http://localhost:5001/api/allowed-recipients \
   -H "Content-Type: application/json" \
   -d '{"name":"John Doe","email":"john@example.com","event":"Hackathon 2024"}'
 ```

@@ -38,7 +38,7 @@ if (-not (Test-Path "backend\.env")) {
     if (-not (Test-Path "backend\.env")) {
         @"
 # Server
-PORT=5000
+PORT=5001
 
 # Database
 DB_HOST=localhost
@@ -77,7 +77,7 @@ VERIFICATION_SECRET=your-verification-secret-change-this
 
 # Frontend .env
 if (-not (Test-Path "frontend\.env")) {
-    "VITE_API_URL=http://localhost:5000" | Out-File -FilePath "frontend\.env" -Encoding utf8
+    "VITE_API_URL=http://localhost:5001" | Out-File -FilePath "frontend\.env" -Encoding utf8
     Write-Host "✓ Frontend .env created" -ForegroundColor Green
 } else {
     Write-Host "✓ Frontend .env already exists" -ForegroundColor Green

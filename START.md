@@ -6,7 +6,7 @@ Both frontend and backend are running!
 
 ## 📍 Current Status
 
-- ✅ Backend: Running on http://localhost:5000
+- ✅ Backend: Running on http://localhost:5001
 - ✅ Frontend: Running on http://localhost:3000
 - ✅ Database: Connected to PostgreSQL
 - ✅ Tables: Auto-initialized
@@ -25,12 +25,12 @@ http://localhost:3000
 Open PowerShell or CMD and run:
 
 ```powershell
-Invoke-WebRequest -Uri http://localhost:5000/api/auth/register -Method POST -ContentType "application/json" -Body '{"username":"admin","email":"admin@example.com","password":"admin123"}' -UseBasicParsing
+Invoke-WebRequest -Uri http://localhost:5001/api/auth/register -Method POST -ContentType "application/json" -Body '{"username":"admin","email":"admin@example.com","password":"admin123"}' -UseBasicParsing
 ```
 
 Or with curl:
 ```bash
-curl -X POST http://localhost:5000/api/auth/register -H "Content-Type: application/json" -d "{\"username\":\"admin\",\"email\":\"admin@example.com\",\"password\":\"admin123\"}"
+curl -X POST http://localhost:5001/api/auth/register -H "Content-Type: application/json" -d "{\"username\":\"admin\",\"email\":\"admin@example.com\",\"password\":\"admin123\"}"
 ```
 
 ### 3. Login
@@ -51,7 +51,7 @@ Go to http://localhost:3000/login
 Add someone to the allowed recipients list:
 
 ```powershell
-Invoke-WebRequest -Uri http://localhost:5000/api/allowed-recipients -Method POST -ContentType "application/json" -Body '{"name":"John Doe","email":"john@example.com","event":"Test Event 2024"}' -UseBasicParsing
+Invoke-WebRequest -Uri http://localhost:5001/api/allowed-recipients -Method POST -ContentType "application/json" -Body '{"name":"John Doe","email":"john@example.com","event":"Test Event 2024"}' -UseBasicParsing
 ```
 
 ### 6. Generate Your First Certificate!
@@ -75,9 +75,9 @@ Invoke-WebRequest -Uri http://localhost:5000/api/allowed-recipients -Method POST
 
 ### Backend not running?
 
-Check if port 5000 is in use:
+Check if port 5001 is in use:
 ```powershell
-netstat -ano | findstr :5000
+netstat -ano | findstr :5001
 ```
 
 Kill if needed:

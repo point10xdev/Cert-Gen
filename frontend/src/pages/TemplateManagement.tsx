@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getTemplates, uploadTemplate, Template } from '../services/templateService';
+import { getTemplates, uploadTemplate, type Template } from '../services/templateService';
 import './TemplateManagement.css';
 
 const TemplateManagement = () => {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getTemplates, Template } from '../services/templateService';
-import { generateCertificate, GenerateData } from '../services/generateService';
+import { getTemplates, type Template } from '../services/templateService';
+import { generateCertificate, type GenerateData } from '../services/generateService';
 import './Generate.css';
 
 const GeneratePage = () => {

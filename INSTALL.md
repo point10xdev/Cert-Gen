@@ -284,12 +284,12 @@ AWS_S3_BUCKET=your-bucket-name
 **Solutions:**
 1. Change port in `backend/.env`:
    ```env
-   PORT=5001
+   PORT=5000
    ```
 
 2. Update `frontend/.env`:
    ```env
-   VITE_API_URL=http://localhost:5001
+   VITE_API_URL=http://localhost:5000
    ```
 
 3. Or kill the process using port 5000

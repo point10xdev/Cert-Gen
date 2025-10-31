@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
     }
 
     const template = templateResult.rows[0];
-    let svgContent = template.svg_content;
+    const templateType = template.template_type || 'svg';
 
     // ✅ Generate unique verification code and QR
     const verificationCode = QRService.generateVerificationCode();
@@ -72,24 +72,6 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // ✅ Replace all placeholders like {{NAME}}, {{event}}, etc.
-    Object.entries(replacements).forEach(([key, value]) => {
-      svgContent = svgContent.replace(new RegExp(`{{${key}}}`, 'gi'), value);
-    });
-
-    // ✅ Handle QR placeholder — insert QR image or embed at default position
-    const hasQRPlaceholder = /\{\{QR\}\}/gi.test(svgContent);
-    if (hasQRPlaceholder) {
-      svgContent = svgContent.replace(
-        /\{\{QR\}\}/gi,
-        `<image x="850" y="600" width="200" height="200" href="${qrDataURL}" />`
-      );
-    } else {
-      svgContent = embedQRCodeInSVG(svgContent, qrDataURL);
-    }
-
-    const qrEmbeddedSVG = svgContent;
-
     // =========================
     // 📁 SAVE PDF LOCALLY
     // =========================
@@ -104,8 +86,56 @@ router.post('/', async (req, res) => {
     const uniqueFilename = `${uuidv4()}.pdf`;
     certificatePath = path.join(outputDir, uniqueFilename);
 
-    // 3️⃣ Generate PDF from SVG
-    await PDFService.generateFromSVG(qrEmbeddedSVG, certificatePath);
+    // 3️⃣ Generate PDF based on template type
+    if (templateType === 'pdf') {
+      // Load PDF template from file
+      if (!template.file_url) {
+        res.status(500).json({ error: 'PDF template file not found' });
+        return;
+      }
+
+      // Extract filename from file_url
+      const templateFilename = path.basename(template.file_url);
+      const templatePath = path.join(__dirname, '../../public/templates', templateFilename);
+
+      if (!fs.existsSync(templatePath)) {
+        res.status(404).json({ error: 'PDF template file not found on disk' });
+        return;
+      }
+
+      // Read PDF template
+      const pdfBuffer = fs.readFileSync(templatePath);
+
+      // Generate PDF from template with placeholder replacement
+      await PDFService.generateFromPDFTemplate(
+        pdfBuffer,
+        replacements,
+        certificatePath,
+        qrDataURL
+      );
+    } else {
+      // Handle SVG/HTML templates
+      let svgContent = template.svg_content || '';
+
+      // ✅ Replace all placeholders like {{NAME}}, {{event}}, etc.
+      Object.entries(replacements).forEach(([key, value]) => {
+        svgContent = svgContent.replace(new RegExp(`{{${key}}}`, 'gi'), value);
+      });
+
+      // ✅ Handle QR placeholder — insert QR image or embed at default position
+      const hasQRPlaceholder = /\{\{QR\}\}/gi.test(svgContent);
+      if (hasQRPlaceholder) {
+        svgContent = svgContent.replace(
+          /\{\{QR\}\}/gi,
+          `<image x="850" y="600" width="200" height="200" href="${qrDataURL}" />`
+        );
+      } else {
+        svgContent = embedQRCodeInSVG(svgContent, qrDataURL);
+      }
+
+      // Generate PDF from SVG
+      await PDFService.generateFromSVG(svgContent, certificatePath);
+    }
 
     // 4️⃣ Build public URL for client access
     const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/certificates/${uniqueFilename}`;

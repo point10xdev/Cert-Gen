@@ -32,12 +32,26 @@ export const initDatabase = async () => {
       CREATE TABLE IF NOT EXISTS templates (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        svg_content TEXT NOT NULL,
+        svg_content TEXT,                        -- SVG content (for SVG templates)
+        template_type VARCHAR(10) DEFAULT 'svg', -- 'svg' or 'pdf'
         placeholders TEXT[],                     -- List of placeholder tags in the template
-        file_url VARCHAR(500),                   -- Optional file storage URL
+        file_url VARCHAR(500),                   -- File storage URL (for PDF templates)
         created_by INTEGER REFERENCES users(id), -- Link to creator (user)
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
+    `);
+
+    // Add template_type column if it doesn't exist (migration for existing databases)
+    await pool.query(`
+      DO $$ 
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name='templates' AND column_name='template_type'
+        ) THEN
+          ALTER TABLE templates ADD COLUMN template_type VARCHAR(10) DEFAULT 'svg';
+        END IF;
+      END $$;
     `);
 
     // Create 'allowed_recipients' table for pre-approved participants or recipients

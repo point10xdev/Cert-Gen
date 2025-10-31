@@ -128,10 +128,10 @@ const TemplateManagement = () => {
                 />
               </div>
               <div className="form-group">
-                <label>SVG File</label>
+                <label>Template File (SVG, HTML, or PDF)</label>
                 <input
                   type="file"
-                  accept=".svg,.html"
+                  accept=".svg,.html,.pdf"
                   onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
                   required
                 />
@@ -147,8 +147,11 @@ const TemplateManagement = () => {
           {templates.map((template) => (
             <div key={template.id} className="template-card">
               <h3>{template.name}</h3>
+              <p className="template-type">
+                Type: {(template.template_type || 'svg').toUpperCase()}
+              </p>
               <p className="template-placeholders">
-                Placeholders: {template.placeholders.join(', ')}
+                Placeholders: {template.placeholders.length > 0 ? template.placeholders.join(', ') : 'None'}
               </p>
               <p className="template-date">
                 Created: {new Date(template.created_at).toLocaleDateString()}
@@ -186,10 +189,18 @@ const TemplateManagement = () => {
               <button onClick={closeModals} className="close-btn">&times;</button>
             </div>
             <div className="modal-body">
-              <div
-                className="preview-svg"
-                dangerouslySetInnerHTML={{ __html: selectedTemplate.svg_content }}
-              />
+              {selectedTemplate.template_type === 'pdf' ? (
+                <iframe
+                  src={selectedTemplate.file_url}
+                  style={{ width: '100%', height: '600px', border: 'none' }}
+                  title="PDF Preview"
+                />
+              ) : (
+                <div
+                  className="preview-svg"
+                  dangerouslySetInnerHTML={{ __html: selectedTemplate.svg_content || '' }}
+                />
+              )}
             </div>
           </div>
         </div>

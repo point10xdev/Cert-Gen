@@ -3,7 +3,8 @@ import api from './api';
 export interface Template {
   id: number;
   name: string;
-  svg_content: string;
+  svg_content: string | null;
+  template_type?: string;
   placeholders: string[];
   file_url?: string;
   created_at: string;

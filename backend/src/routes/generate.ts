@@ -3,7 +3,7 @@ import { pool } from '../config/database';
 import { PDFService } from '../services/pdfService';
 import { QRService } from '../services/qrService';
 import { MailService } from '../services/mailService';
-import { StorageService } from '../services/storageService';
+// import { StorageService } from '../services/storageService'; // No longer needed for S3
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
   let certificatePath: string | null = null;
-  let qrPath: string | null = null;
+  // let qrPath: string | null = null; // This variable was not used
 
   try {
     const { name, email, templateId, sendEmail, event, metadata } = req.body;
@@ -67,20 +67,30 @@ router.post('/', async (req, res) => {
     // Embed QR code in SVG
     const qrEmbeddedSVG = embedQRCodeInSVG(svgContent, qrDataURL);
 
-    // Generate PDF
-    const outputDir = path.join(__dirname, '../../temp');
+    // --- UPDATED LOGIC FOR LOCAL STORAGE ---
+
+    // 1. Define the public output directory
+    const outputDir = path.join(__dirname, '../../public/certificates');
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    certificatePath = path.join(outputDir, `cert_${Date.now()}.pdf`);
+    // 2. Create a unique filename
+    const uniqueFilename = `${uuidv4()}.pdf`;
+    certificatePath = path.join(outputDir, uniqueFilename);
+
+    // 3. Generate the PDF and save it to the public path
     await PDFService.generateFromSVG(qrEmbeddedSVG, certificatePath);
 
-    // Upload to S3
-    const s3Key = `certificates/${uuidv4()}.pdf`;
-    const fileUrl = await StorageService.uploadFile(certificatePath, s3Key);
+    // 4. Create the public-facing URL for the file
+    //    (Assuming backend is on 5001 as per your logs)
+    const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5001'}/certificates/${uniqueFilename}`;
 
-    // Save certificate record
+    // 5. The AWS S3 upload block is removed.
+    
+    // --- END OF UPDATED LOGIC ---
+
+    // Save certificate record to database
     const certResult = await pool.query(
       `INSERT INTO certificates (verification_code, recipient_name, recipient_email, template_id, file_url, metadata)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
@@ -90,9 +100,11 @@ router.post('/', async (req, res) => {
     // Send email if requested
     if (sendEmail) {
       try {
+        // MailService uses the 'certificatePath' to find the file on disk
         await MailService.sendCertificate(name, email, certificatePath, verificationCode);
       } catch (error) {
         console.error('Failed to send email:', error);
+        // We don't fail the whole request if email fails
       }
     }
 
@@ -105,10 +117,12 @@ router.post('/', async (req, res) => {
     console.error('Error generating certificate:', error);
     res.status(500).json({ error: 'Internal server error' });
   } finally {
-    // Cleanup temp files
+    // We NO LONGER delete the file, as we want to serve it.
+    /*
     if (certificatePath && fs.existsSync(certificatePath)) {
       fs.unlinkSync(certificatePath);
     }
+    */
   }
 });
 
@@ -124,6 +138,9 @@ router.post('/bulk', async (req, res) => {
     const results = [];
     const errors = [];
 
+    // Note: Using fetch to 'localhost' here might be unreliable in production.
+    // A better approach would be to refactor the generation logic into a
+    // separate service function and call it directly.
     for (const recipient of recipients) {
       try {
         const response = await fetch(`${req.protocol}://${req.get('host')}/api/generate`, {
@@ -154,14 +171,15 @@ router.post('/bulk', async (req, res) => {
 });
 
 function embedQRCodeInSVG(svgContent: string, qrDataURL: string): string {
+  // These coordinates are from the original file.
   const qrImageTag = `<image x="850" y="600" width="200" height="200" href="${qrDataURL}" />`;
   
   if (svgContent.includes('</svg>')) {
     return svgContent.replace('</svg>', `${qrImageTag}</svg>`);
   }
   
-  return svgContent;
+  // Fallback if no closing </svg> tag is found (less likely)
+  return svgContent + qrImageTag;
 }
 
 export default router;
-

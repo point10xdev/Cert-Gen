@@ -3,12 +3,30 @@
   background: #f5f7fa;
 }
 
+/* --- NEW: Make page-content a flex container --- */
+.page-content {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1400px; /* Widen page for two columns */
+  margin: 0 auto;
+}
+
+/* --- NEW: Style for the left (form) column --- */
+.form-container {
+  flex: 1;
+  min-width: 400px; /* Minimum width for the form */
+  max-width: 600px;
+}
+
+/* --- MODIFIED: form itself doesn't need new layout */
 .generate-form {
   background: white;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  /* max-width: 600px; -- REMOVED, parent .form-container handles this */
 }
 
 .generate-form h1 {
@@ -78,3 +96,36 @@
   cursor: not-allowed;
 }
 
+/* --- NEW: Styles for the right (preview) column --- */
+.preview-container {
+  flex: 1;
+  min-width: 400px; /* Minimum width for preview */
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: fit-content; /* Make it stick to top */
+}
+
+.preview-container h2 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.preview-iframe {
+  width: 100%;
+  height: 600px; /* Taller preview */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.preview-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 600px;
+  border: 2px dashed #ddd;
+  border-radius: 6px;
+  color: #999;
+  text-align: center;
+}

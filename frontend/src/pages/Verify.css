@@ -1,10 +1,20 @@
+/* =============================
+   VERIFY PAGE - DARK THEME
+   Matches Login, Dashboard, etc.
+============================= */
+
 .verify-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Use the same background as Dashboard/Generate */
+  background-image: url('../assets/background2.png'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2rem;
+  color: #e4e4e7; /* Default light text */
 }
 
 .verify-container {
@@ -12,30 +22,35 @@
   max-width: 600px;
 }
 
+/* Use the dark box style from Login.css */
 .verify-result {
-  background: white;
+  background: #18181b; /* Dark box background */
+  color: #e4e4e7; /* Default light text color */
   padding: 3rem;
   border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
 .verify-result h1 {
   margin: 0 0 1rem 0;
   text-align: center;
   font-size: 2rem;
+  color: #ffffff; /* White heading */
 }
 
+/* Use theme's green */
 .verify-result.valid h1 {
-  color: #10b981;
+  color: #45b850;
 }
 
+/* Use theme's red */
 .verify-result.invalid h1 {
   color: #ef4444;
 }
 
 .verify-result p {
   text-align: center;
-  color: #666;
+  color: #a1a1aa; /* Light gray subheading */
   margin: 0;
 }
 
@@ -45,7 +60,7 @@
 
 .detail-item {
   padding: 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #3f3f46; /* Dark border */
 }
 
 .detail-item:last-child {
@@ -53,7 +68,7 @@
 }
 
 .detail-item strong {
-  color: #333;
+  color: #ffffff; /* Brighter text for label */
   display: inline-block;
   min-width: 100px;
 }
@@ -63,20 +78,72 @@
   text-align: center;
 }
 
-.btn-download {
+/* Base button style (for btn-download, btn-secondary) */
+.btn-download,
+.btn-secondary {
   display: inline-block;
   padding: 0.75rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
   text-decoration: none;
   border-radius: 6px;
   font-weight: 600;
   transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
 }
 
-.btn-download:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+/* Primary button (theme green) */
+.btn-download {
+  background: #45b850;
+  color: white;
+}
+
+.btn-download:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(69, 184, 80, 0.3);
+}
+
+/* Secondary button (dark gray) */
+.btn-secondary {
+  background: #2b2b2b;
+  color: #d1d5db;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #3a3a3a;
+}
+
+/* --- NEW FORM STYLES --- */
+.verify-form .form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.verify-form .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #e4e4e7; /* Light label text */
+  font-weight: 500;
+}
+
+/* Dark input style from Login.css */
+.verify-form .form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  background: #27272a; /* Dark input background */
+  color: #ffffff;      /* White text when typing */
+}
+
+/* Focus style from Generate.css */
+.verify-form .form-group input:focus {
+  outline: none;
+  border-color: #45b850;
+  box-shadow: 0 0 6px rgba(69, 184, 80, 0.4);
 }
 
 .loading {
@@ -84,4 +151,3 @@
   color: white;
   font-size: 1.2rem;
 }
-

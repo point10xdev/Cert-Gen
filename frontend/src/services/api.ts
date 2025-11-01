@@ -1,46 +1,63 @@
 import axios from 'axios';
 
+// ✅ Create an Axios instance with default settings
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api', // ✅ dynamic base URL for dev/prod
+  baseURL: import.meta.env.VITE_API_URL || '/api', // Use backend URL from env or fallback to '/api'
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json', // Default request content type
   },
-  withCredentials: false, // set true if using cookies for auth
+  withCredentials: false, // Set to true if using cookies/sessions for authentication
 });
 
-// ✅ Add Authorization header automatically
+// ✅ Request interceptor — runs before every API request
 api.interceptors.request.use(
   (config) => {
+    // Get JWT token from localStorage
     const token = localStorage.getItem('token');
+
+    // If token exists, attach it to the Authorization header
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    // If the data is FormData, remove Content-Type header to let browser set it automatically
+
+    // If sending FormData (e.g., file uploads), remove default Content-Type
+    // so the browser can set the correct multipart boundary automatically
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
     }
+
+    // Return the modified config to proceed with the request
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error) // Reject the promise if request setup fails
 );
 
-// ✅ Handle common API errors globally (optional)
+// ✅ Response interceptor — handles responses and global errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => response, // Return response directly if successful
+
   (error) => {
+    // If the server responded with an error status
     if (error.response) {
       if (error.response.status === 401) {
-        // Token expired or invalid
-        localStorage.removeItem('token');
-        window.location.href = '/login';
+        // Handle unauthorized access (e.g., expired or invalid token)
+        localStorage.removeItem('token'); // Remove old token
+        window.location.href = '/login'; // Redirect user to login page
       }
-    } else if (error.request) {
+    } 
+    // If request was made but no response received (e.g., network issue)
+    else if (error.request) {
       console.error('No response from server. Check your backend connection.');
-    } else {
+    } 
+    // If Axios itself threw an error (e.g., setup issue)
+    else {
       console.error('Axios error:', error.message);
     }
+
+    // Always reject to let individual API calls handle errors if needed
     return Promise.reject(error);
   }
 );
 
+// ✅ Export the configured Axios instance for reuse across the app
 export default api;

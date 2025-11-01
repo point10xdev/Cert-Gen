@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export class MailService {
+  /*
   private static transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587', 10),
@@ -13,6 +14,7 @@ export class MailService {
       pass: process.env.SMTP_PASS,
     },
   });
+  */
 
   /**
    * Sends a certificate email with attachment and verification link.
@@ -23,6 +25,13 @@ export class MailService {
     certificatePath: string,
     verificationCode: string
   ): Promise<void> {
+    
+    // --- MAIL SERVICE DISABLED ---
+    console.log(`(Mail Service Disabled) Skipped sending email to ${to} for ${name}.`);
+    return Promise.resolve();
+    // --- END DISABLED ---
+
+    /*
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const verificationUrl = `${frontendUrl}/verify/${verificationCode}`;
 
@@ -69,5 +78,6 @@ export class MailService {
       console.error(`❌ Failed to send certificate email to ${to}:`, error);
       throw new Error(`Failed to send certificate email: ${error.message || error}`);
     }
+    */
   }
 }

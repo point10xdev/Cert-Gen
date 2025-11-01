@@ -2,7 +2,7 @@ import express from 'express';
 import { pool } from '../config/database';
 import { PDFService } from '../services/pdfService'; // Handles SVG → PDF conversion
 import { QRService } from '../services/qrService';   // Generates QR codes
-import { MailService } from '../services/mailService'; // Handles email sending
+// import { MailService } from '../services/mailService'; // Handles email sending
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid'; // Generates unique filenames and temporary codes
@@ -173,6 +173,7 @@ router.post('/', async (req, res) => {
     }
 
     // ✅ 10. Optionally send certificate via email
+    /*
     if (sendEmail) {
       try {
         await MailService.sendCertificate(name, email, certificatePath, finalVerificationCode);
@@ -180,6 +181,7 @@ router.post('/', async (req, res) => {
         console.error('Failed to send email:', error);
       }
     }
+    */
 
     // ✅ 11. Respond with success and details
     res.json({

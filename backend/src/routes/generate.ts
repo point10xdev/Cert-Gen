@@ -1,11 +1,11 @@
 import express from 'express';
 import { pool } from '../config/database';
 import { PDFService } from '../services/pdfService'; // Handles SVG → PDF conversion
-import { QRService } from '../services/qrService';   // Generates QR codes and verification codes
+import { QRService } from '../services/qrService';   // Generates QR codes
 import { MailService } from '../services/mailService'; // Handles email sending
 import fs from 'fs';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid'; // Generates unique filenames
+import { v4 as uuidv4 } from 'uuid'; // Generates unique filenames and temporary codes
 
 const router = express.Router();
 
@@ -18,13 +18,13 @@ router.post('/', async (req, res) => {
   try {
     const { name, email, templateId, sendEmail, event, metadata } = req.body;
 
-    // ✅ Validate required fields
+    // ✅ 1. Validate required fields
     if (!name || !email || !templateId) {
       res.status(400).json({ error: 'Name, email, and templateId are required' });
       return;
     }
 
-    // ✅ Ensure recipient is allowed
+    // ✅ 2. Ensure recipient is allowed
     const recipientCheck = await pool.query(
       'SELECT * FROM allowed_recipients WHERE email = $1',
       [email]
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
       return;
     }
 
-    // ✅ Fetch the certificate template
+    // ✅ 3. Fetch the certificate template
     const templateResult = await pool.query(
       'SELECT * FROM templates WHERE id = $1',
       [templateId]
@@ -47,19 +47,64 @@ router.post('/', async (req, res) => {
     const template = templateResult.rows[0];
     const templateType = template.template_type || 'svg';
 
-    // ✅ Generate unique verification code and QR
-    const verificationCode = QRService.generateVerificationCode();
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify/${verificationCode}`;
+    // =========================
+    // 📁 PREPARE FILE PATHS
+    // =========================
+    // 1️⃣ Create public directory if missing
+    const outputDir = path.join(__dirname, '../../public/certificates');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    // 2️⃣ Create unique PDF filename and URL (we know this before generation)
+    const uniqueFilename = `${uuidv4()}.pdf`;
+    certificatePath = path.join(outputDir, uniqueFilename);
+    const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/certificates/${uniqueFilename}`;
+
+    // =========================
+    // 🌟 NEW ID GENERATION LOGIC
+    // =========================
+
+    // ✅ 4. Insert record with a temporary code to get the auto-increment ID
+    const tempCode = uuidv4(); // A temporary unique code
+    const certResult = await pool.query(
+      `INSERT INTO certificates 
+       (verification_code, recipient_name, recipient_email, template_id, file_url, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [tempCode, name, email, templateId, fileUrl, JSON.stringify(metadata || {})]
+    );
+
+    const certificateRecord = certResult.rows[0];
+    const newCertId = certificateRecord.id;
+
+    // ✅ 5. Generate the final, formatted verification code (FOSS-xxxxxx)
+    const finalVerificationCode = `FOSS-${String(newCertId).padStart(6, '0')}`;
+
+    // ✅ 6. Update the record in the database with the final code
+    await pool.query(
+      `UPDATE certificates SET verification_code = $1 WHERE id = $2`,
+      [finalVerificationCode, newCertId]
+    );
+
+    // Update the local object so the response is correct
+    certificateRecord.verification_code = finalVerificationCode;
+
+    // =========================
+    // 🧩 PREPARE FOR PDF GENERATION
+    // =========================
+
+    // ✅ 7. Generate QR code using the *final* verification code
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify/${finalVerificationCode}`;
     const qrDataURL = await QRService.generateQRCode(verificationUrl);
 
-    // ✅ Prepare placeholder replacements (case-insensitive)
+    // ✅ 8. Prepare placeholder replacements using the *final* code
     const replacements: { [key: string]: string } = {
       NAME: name,
       name: name,
       EVENT: event || '',
       event: event || '',
-      ID: verificationCode,
-      id: verificationCode,
+      ID: finalVerificationCode, // Use the final code here
+      id: finalVerificationCode, // Use the final code here
       EMAIL: email,
       email: email,
     };
@@ -73,20 +118,10 @@ router.post('/', async (req, res) => {
     }
 
     // =========================
-    // 📁 SAVE PDF LOCALLY
+    // 📄 GENERATE PDF
     // =========================
 
-    // 1️⃣ Create public directory if missing
-    const outputDir = path.join(__dirname, '../../public/certificates');
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    // 2️⃣ Create unique PDF filename
-    const uniqueFilename = `${uuidv4()}.pdf`;
-    certificatePath = path.join(outputDir, uniqueFilename);
-
-    // 3️⃣ Generate PDF based on template type
+    // 3️⃣ Generate PDF based on template type (now using final code)
     if (templateType === 'pdf') {
       // Load PDF template from file
       if (!template.file_url) {
@@ -137,30 +172,19 @@ router.post('/', async (req, res) => {
       await PDFService.generateFromSVG(svgContent, certificatePath);
     }
 
-    // 4️⃣ Build public URL for client access
-    const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/certificates/${uniqueFilename}`;
-
-    // ✅ Save certificate record in the database
-    const certResult = await pool.query(
-      `INSERT INTO certificates 
-       (verification_code, recipient_name, recipient_email, template_id, file_url, metadata)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [verificationCode, name, email, templateId, fileUrl, JSON.stringify(metadata || {})]
-    );
-
-    // ✅ Optionally send certificate via email
+    // ✅ 10. Optionally send certificate via email
     if (sendEmail) {
       try {
-        await MailService.sendCertificate(name, email, certificatePath, verificationCode);
+        await MailService.sendCertificate(name, email, certificatePath, finalVerificationCode);
       } catch (error) {
         console.error('Failed to send email:', error);
       }
     }
 
-    // ✅ Respond with success and details
+    // ✅ 11. Respond with success and details
     res.json({
       success: true,
-      certificate: certResult.rows[0],
+      certificate: certificateRecord, // This now has the final code
       fileUrl,
     });
   } catch (error) {

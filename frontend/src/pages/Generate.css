@@ -1,39 +1,53 @@
 .generate-page {
   min-height: 100vh;
-  background: #f5f7fa;
+  background-image: url('../assets/background2.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  padding: 2rem 0;
 }
 
-/* --- NEW: Make page-content a flex container --- */
+/* --- Page Layout --- */
 .page-content {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping on small screens */
+  flex-wrap: wrap;
   gap: 2rem;
   padding: 2rem;
-  max-width: 1400px; /* Widen page for two columns */
+  max-width: 1400px;
   margin: 0 auto;
 }
 
-/* --- NEW: Style for the left (form) column --- */
+/* --- Left Column (Form Section) --- */
 .form-container {
   flex: 1;
-  min-width: 400px; /* Minimum width for the form */
+  min-width: 400px;
   max-width: 600px;
 }
 
-/* --- MODIFIED: form itself doesn't need new layout */
 .generate-form {
-  background: white;
+  background: rgba(23, 23, 23, 0.9);
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  /* max-width: 600px; -- REMOVED, parent .form-container handles this */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.generate-form:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
 }
 
 .generate-form h1 {
   margin: 0 0 2rem 0;
-  color: #333;
+  color: #fff;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
+/* --- Form Inputs --- */
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -41,7 +55,7 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: #d1d5db;
   font-weight: 500;
 }
 
@@ -49,22 +63,27 @@
 .form-group select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  background: #1f1c1c;
+  border: 1px solid #333;
   border-radius: 6px;
   font-size: 1rem;
-  box-sizing: border-box;
+  color: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #45b850;
+  box-shadow: 0 0 6px rgba(69, 184, 80, 0.4);
 }
 
+/* --- Checkbox --- */
 .checkbox-group label {
   display: flex;
   align-items: center;
   font-weight: normal;
+  color: #d1d5db;
 }
 
 .checkbox-group input[type="checkbox"] {
@@ -73,10 +92,11 @@
   cursor: pointer;
 }
 
+/* --- Submit Button --- */
 .generate-form .btn-primary {
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #45b850;
   color: white;
   border: none;
   border-radius: 6px;
@@ -87,8 +107,8 @@
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(69, 184, 80, 0.3);
 }
 
 .btn-primary:disabled {
@@ -96,27 +116,32 @@
   cursor: not-allowed;
 }
 
-/* --- NEW: Styles for the right (preview) column --- */
+/* --- Right Column (Preview Section) --- */
 .preview-container {
   flex: 1;
-  min-width: 400px; /* Minimum width for preview */
-  background: white;
+  min-width: 400px;
+  background: rgba(23, 23, 23, 0.9);
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  height: fit-content; /* Make it stick to top */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  height: fit-content;
 }
 
 .preview-container h2 {
-  margin: 0 0 1rem 0;
-  color: #333;
+  margin: 0 0 1.5rem 0;
+  color: #fff;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .preview-iframe {
   width: 100%;
-  height: 600px; /* Taller preview */
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  height: 600px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #0f0f0f;
 }
 
 .preview-placeholder {
@@ -124,8 +149,17 @@
   align-items: center;
   justify-content: center;
   height: 600px;
-  border: 2px dashed #ddd;
-  border-radius: 6px;
-  color: #999;
+  border: 2px dashed #333;
+  border-radius: 8px;
+  color: #888;
   text-align: center;
+  font-size: 1rem;
+  background: #171717;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .page-content {
+    flex-direction: column;
+  }
 }

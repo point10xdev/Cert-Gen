@@ -30,7 +30,6 @@ const RegisterPage = () => {
     <div className="login-container">
       <div className="login-box">
         <h1>Create Account</h1>
-        <h2>Admin Registration</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username</label>

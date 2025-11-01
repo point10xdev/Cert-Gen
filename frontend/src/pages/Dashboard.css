@@ -1,10 +1,13 @@
 .dashboard {
   min-height: 100vh;
-  background: #f5f7fa;
+  background-image: url('../assets/background2.png'); /* Assumes image is in frontend/public */
+  background-size: cover; 
+  background-position: center; 
+  background-repeat: no-repeat; 
 }
 
 .dashboard-header {
-  background: white;
+  background: #171717;
   padding: 1.5rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -18,7 +21,7 @@
 
 .dashboard-header h1 {
   margin: 0;
-  color: #333;
+  color: white;
 }
 
 .logout-btn {
@@ -49,7 +52,7 @@
 }
 
 .stat-card {
-  background: white;
+  background: #1f1c1c;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -58,7 +61,7 @@
 
 .stat-card h3 {
   margin: 0 0 0.5rem 0;
-  color: #666;
+  color: white;
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -68,7 +71,7 @@
   margin: 0;
   font-size: 2.5rem;
   font-weight: bold;
-  color: #667eea;
+  color: #45b850;
 }
 
 .actions-grid {
@@ -78,7 +81,7 @@
 }
 
 .action-card {
-  background: white;
+  background: #1f1c1c;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -100,7 +103,7 @@
 
 .action-card h3 {
   margin: 0 0 0.5rem 0;
-  color: #333;
+  color: white;
 }
 
 .action-card p {

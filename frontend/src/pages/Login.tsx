@@ -31,7 +31,6 @@ const LoginPage = () => {
     <div className="login-container">
       <div className="login-box">
         <h1>Certificate Generator</h1>
-        <h2>Admin Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username</label>
